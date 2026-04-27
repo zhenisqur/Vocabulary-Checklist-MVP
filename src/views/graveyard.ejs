@@ -1,0 +1,114 @@
+<div class="max-w-7xl mx-auto px-4 py-10">
+  <% if (typeof words !== 'undefined' && words.length > 0) { %>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <% words.forEach(item => { %>
+        <div id="word-card-<%= item.id %>" class="glass-card p-8 rounded-[40px] border border-emerald-100/50 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
+          
+          <div class="absolute -right-4 -top-4 w-20 h-20 bg-emerald-50 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+          <div class="absolute top-6 right-6 flex gap-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button onclick="resurrectWord('<%= item.id %>')" title="Воскресить" class="p-3 bg-white shadow-sm border border-emerald-100 text-emerald-600 rounded-2xl hover:bg-emerald-600 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+            </button>
+            <button onclick="deleteWordPermanently('<%= item.id %>')" title="Удалить навсегда" class="p-3 bg-white shadow-sm border border-rose-100 text-rose-500 rounded-2xl hover:bg-rose-500 hover:text-white transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+            </button>
+          </div>
+
+          <div class="relative z-10">
+            <h3 class="text-2xl font-black text-slate-400 uppercase tracking-tighter transition-colors group-hover:text-emerald-700">
+              <%= item.word %>
+            </h3>
+            
+            <p class="text-slate-400 font-medium mt-3 leading-relaxed">
+              <%= item.meaning %>
+            </p>
+            
+            <div class="flex items-center gap-2 mt-6">
+              <span class="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-[10px] font-black text-emerald-600/50 uppercase tracking-widest border border-emerald-100/50">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+                Похоронено
+              </span>
+              
+              <% if (item.death_count > 0) { %>
+                <span class="text-[10px] font-bold text-slate-300 uppercase tracking-tighter">
+                  Умерло раз: <%= item.death_count %>
+                </span>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <div class="max-w-2xl mx-auto mt-20 animate-in fade-in zoom-in duration-700">
+      <div class="bg-white/60 backdrop-blur-md p-16 rounded-[60px] shadow-[0_40px_100px_rgba(0,0,0,0.03)] border border-white text-center relative overflow-hidden">
+          <div class="absolute -top-24 -right-24 w-64 h-64 bg-emerald-50 rounded-full blur-3xl opacity-50"></div>
+          <div class="relative z-10">
+              <div class="w-24 h-24 bg-emerald-50 rounded-3xl flex items-center justify-center mx-auto mb-10 transform rotate-12 shadow-sm border border-emerald-100">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+              </div>
+              <h2 class="text-4xl font-black text-slate-800 uppercase tracking-tighter mb-4">Кладбище пустует!</h2>
+              <p class="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mb-10 leading-relaxed">Ты воскресил всех павших <br> Твоя империя знаний в полном порядке.</p>
+              <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                  <a href="/" class="px-10 py-5 bg-slate-900 text-white rounded-[24px] font-black uppercase text-[10px] tracking-widest hover:bg-slate-800 transition-all shadow-lg">На главную</a>
+                  <a href="/revive" class="px-10 py-5 bg-emerald-600 text-white rounded-[24px] font-black uppercase text-[10px] tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-900/20">Начать тренировку →</a>
+              </div>
+          </div>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<script>
+    // 1. Функция воскрешения (перевод в active)
+    async function resurrectWord(id) {
+        const res = await fetch(`/resurrect-word/${id}`, { method: 'POST' });
+        if (res.ok) {
+            fadeOutAndRemove(id);
+        }
+    }
+
+    // 2. Функция удаления навсегда
+    async function deleteWordPermanently(id) {
+        if (!confirm('Удалить это слово из базы навсегда?')) return;
+        
+        const res = await fetch(`/delete-word/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            fadeOutAndRemove(id);
+        }
+    }
+
+    // Вспомогательная функция для красоты
+    function fadeOutAndRemove(id) {
+        const el = document.getElementById(`word-card-${id}`);
+        el.style.opacity = '0';
+        el.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            el.remove();
+            // Если карточек больше нет, обновляем страницу чтобы показать "Пустое состояние"
+            if (document.querySelectorAll('[id^="word-card-"]').length === 0) {
+                location.reload();
+            }
+        }, 300);
+    }
+</script>
+
+<style>
+    .glass-card {
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+    }
+    .animate-in {
+        animation: fadeInZoom 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    @keyframes fadeInZoom {
+        from { opacity: 0; transform: scale(0.95) translateY(10px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+</style>

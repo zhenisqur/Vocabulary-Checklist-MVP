@@ -1,0 +1,77 @@
+<div class="max-w-6xl mx-auto">
+  <div class="flex justify-between items-end mb-12">
+    <div>
+      <h1 class="text-5xl font-black text-slate-900 tracking-tighter">Твой словарь</h1>
+      <p class="text-slate-400 font-bold mt-2 uppercase tracking-widest text-xs">
+        Всего в памяти: <span class="text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full ml-1"><%= words.length %> слов</span>
+      </p>
+      <p class="text-slate-400 font-bold mt-2 uppercase tracking-widest text-xs">
+         <span class="text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full ml-1"></span>
+      </p>
+    </div>
+  </div>
+
+  <div class="mb-12 p-8 bg-white/70 backdrop-blur-md rounded-[48px] border border-white shadow-[0_20px_50px_rgba(0,0,0,0.04)] relative overflow-hidden group">
+    <div class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-50 rounded-full blur-3xl opacity-60 group-hover:opacity-100 transition-opacity"></div>
+    
+    <h2 class="text-xs font-black mb-6 uppercase tracking-[0.2em] text-emerald-600/60">Добавить новое слово</h2>
+    
+    <form action="/add-word" method="POST" class="flex flex-col md:flex-row gap-5 relative z-10">
+      <div class="flex-1 relative">
+        <input type="text" name="word" placeholder="Слово (напр. Serendipity)" 
+               class="w-full p-5 bg-slate-50/50 border-2 border-transparent rounded-[24px] focus:bg-white focus:border-emerald-600/10 focus:ring-4 focus:ring-emerald-600/5 transition-all outline-none font-bold text-slate-700 placeholder:text-slate-300" required>
+      </div>
+      
+      <div class="flex-1">
+        <input type="text" name="meaning" placeholder="Перевод" 
+               class="w-full p-5 bg-slate-50/50 border-2 border-transparent rounded-[24px] focus:bg-white focus:border-emerald-600/10 focus:ring-4 focus:ring-emerald-600/5 transition-all outline-none font-bold text-slate-700 placeholder:text-slate-300" required>
+      </div>
+      
+      <button type="submit" class="px-10 py-5 bg-emerald-600 text-white font-black rounded-[24px] hover:bg-emerald-700 hover:-translate-y-1 active:scale-95 transition-all shadow-xl shadow-emerald-900/10 uppercase tracking-widest text-sm">
+        СОХРАНИТЬ
+      </button>
+    </form>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <% if (words && words.length > 0) { %>
+      <% words.forEach(item => { %>
+        <%# ФИЛЬТР: Показываем слово только если оно не "активное" и не "на кладбище" %>
+        <% if (item.status !== 'active' && item.status !== 'buried') { %>
+          <div class="bg-white p-8 rounded-[40px] border border-slate-50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden">
+            
+            <div class="flex justify-between items-start relative z-10">
+              <div class="flex-1">
+                <span class="inline-block px-3 py-1 bg-emerald-50 text-[10px] font-black text-emerald-600 uppercase tracking-widest rounded-full mb-3">
+                  New Word
+                </span>
+                <h3 class="text-2xl font-black text-slate-800 uppercase tracking-tighter leading-tight group-hover:text-emerald-600 transition-colors">
+                  <%= item.word %>
+                </h3>
+                <p class="text-slate-400 font-medium mt-3 leading-relaxed">
+                  <%= item.meaning %>
+                </p>
+              </div>
+              
+              <form action="/kill/<%= item.id %>" method="POST" class="opacity-0 group-hover:opacity-100 transition-all transform translate-x-4 group-hover:translate-x-0">
+                <button type="submit" 
+                        class="p-3 bg-rose-50 text-rose-500 rounded-2xl hover:bg-rose-500 hover:text-white transition-all shadow-sm" 
+                        title="Удалить">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                  </svg>
+                </button>
+              </form>
+            </div>
+
+            <div class="absolute -left-4 -bottom-4 w-24 h-24 bg-emerald-50/30 rounded-full blur-2xl group-hover:bg-emerald-100/50 transition-colors"></div>
+          </div>
+        <% } %>
+      <% }) %>
+    <% } else { %>
+      <div class="col-span-full text-center py-20 bg-slate-50 rounded-[40px] border-2 border-dashed border-slate-200">
+        <p class="text-slate-400 font-bold uppercase tracking-widest">Если лень можешь добавить через библиотеку!</p>
+      </div>
+    <% } %>
+  </div>
+</div>

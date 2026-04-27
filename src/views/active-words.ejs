@@ -1,0 +1,119 @@
+<div class="max-w-6xl mx-auto py-10">
+    <div class="flex justify-between items-end mb-12 px-4 md:px-0">
+        <div>
+            <h1 class="text-5xl font-black text-slate-900 tracking-tighter">Живые</h1>
+            <p class="text-slate-400 font-bold mt-2 uppercase tracking-widest text-xs">
+                В активном строю: 
+                <span class="text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full ml-1">
+                    <%= activeCount %> слов
+                </span>
+            </p>
+        </div>
+        <a href="/words" class="px-6 py-3 bg-slate-900 text-white text-xs font-black rounded-2xl hover:bg-slate-800 transition-all uppercase tracking-widest shadow-lg shadow-slate-200">
+            + В словарь
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-0">
+        <% if (words && words.length > 0) { %>
+            <% words.forEach(item => { %>
+                <div id="word-card-<%= item.id %>" class="bg-white p-8 rounded-[40px] border border-slate-50 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden">
+                    
+                    <div class="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-all z-20 translate-y-2 group-hover:translate-y-0">
+                        <button onclick="editWord('<%= item.id %>', '<%= item.word %>', '<%= item.meaning %>')" class="p-3 bg-white/90 backdrop-blur-sm rounded-2xl text-slate-400 hover:text-emerald-600 shadow-sm border border-slate-100 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                        <button onclick="buryWord('<%= item.id %>')" class="p-3 bg-white/90 backdrop-blur-sm rounded-2xl text-slate-400 hover:text-rose-500 shadow-sm border border-slate-100 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="relative z-10">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="inline-block px-3 py-1 bg-emerald-50 text-[10px] font-black text-emerald-600 uppercase tracking-widest rounded-full">
+                                Active
+                            </span>
+                            
+                            <% if (item.death_count > 0) { %>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" title="Количество ошибок"> 
+                                   Умерло раз: <%= item.death_count %>
+                                </span>
+                            <% } %>
+                        </div>
+                        
+                        <h3 id="word-text-<%= item.id %>" class="text-2xl font-black text-slate-800 uppercase tracking-tighter leading-tight group-hover:text-emerald-600 transition-colors">
+                            <%= item.word %>
+                        </h3>
+                        
+                        <p id="meaning-text-<%= item.id %>" class="text-slate-400 font-medium mt-3 leading-relaxed">
+                            <%= item.meaning %>
+                        </p>
+                    </div>
+
+                    <div class="absolute -left-4 -bottom-4 w-24 h-24 bg-emerald-50/30 rounded-full blur-2xl group-hover:bg-emerald-100/50 transition-colors"></div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="col-span-full text-center py-24 bg-white/60 backdrop-blur-md rounded-[48px] border-2 border-dashed border-slate-200">
+                <div class="mb-6 inline-flex p-6 bg-slate-50 rounded-full text-slate-300">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-black text-slate-800 mb-2 uppercase tracking-tighter">В Империи пусто</h3>
+                <p class="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] mb-8">Все слова выучены или еще не добавлены</p>
+                <a href="/words" class="px-10 py-5 bg-emerald-600 text-white font-black rounded-[24px] hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-900/10 uppercase tracking-widest text-xs">
+                    Оживить слова из словаря
+                </a>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+    // 1. Функция редактирования (через prompt для скорости)
+    async function editWord(id, oldWord, oldMeaning) {
+        const newWord = prompt("Редактировать слово:", oldWord);
+        const newMeaning = prompt("Редактировать перевод:", oldMeaning);
+        
+        if (newWord && newMeaning && (newWord !== oldWord || newMeaning !== oldMeaning)) {
+            try {
+                const res = await fetch(`/update-word/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ word: newWord, meaning: newMeaning })
+                });
+                if (res.ok) {
+                    location.reload();
+                } else {
+                    alert('Ошибка при обновлении');
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    }
+
+    // 2. Функция переноса на кладбище (убить)
+    async function buryWord(id) {
+        if (!confirm('Отправить это слово на кладбище?')) return;
+        
+        try {
+            const res = await fetch(`/bury-word/${id}`, {
+                method: 'POST'
+            });
+            if (res.ok) {
+                const card = document.getElementById(`word-card-${id}`);
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    card.remove();
+                    // Обновляем счетчик на странице визуально (опционально)
+                    location.reload(); 
+                }, 300);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+</script>

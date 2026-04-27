@@ -1,0 +1,103 @@
+<style>
+    /* Скрываем стандартный белый фон и серые полосы основного лейаута */
+    body { background: #0f172a !important; }
+    main { background: transparent !important; }
+    
+    .emergency-wrapper {
+        position: fixed;
+        inset: 0;
+        z-index: 40;
+        background: radial-gradient(circle at center, #dc2626, #450a0a);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pulse-border { animation: pulse 2s infinite; }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); }
+        70% { box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+    }
+</style>
+
+<div class="emergency-wrapper ml-64"> <div id="mainCard" class="bg-white text-slate-900 w-full max-w-2xl rounded-[50px] p-12 shadow-2xl relative z-50 pulse-border transition-all duration-500">
+        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-2 rounded-full font-black text-sm tracking-widest uppercase shadow-xl">
+            ВОСКРЕШЕНИЕ: <%= buriedCount %> ОСТАЛОСЬ
+        </div>
+
+        <div class="text-center space-y-8">
+            <h1 class="text-7xl font-black text-slate-900 tracking-tighter uppercase break-words leading-none">
+                <%= currentWord.word %>
+            </h1>
+            
+            <div id="translation" class="hidden">
+                <p class="text-3xl font-bold text-red-600 border-t border-red-100 pt-8 mt-8 italic">
+                    <%= currentWord.translation %>
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 pt-10">
+                <button onclick="showTranslation()" id="showBtn" class="w-full py-6 bg-slate-900 text-white rounded-[30px] font-black text-xl hover:bg-black transition-all active:scale-95">
+                    ПОКАЗАТЬ ОТВЕТ
+                </button>
+                
+                <div id="actionBtns" class="hidden grid-cols-2 gap-4 w-full">
+                    <button onclick="handleAction('remembered')" class="py-6 bg-emerald-500 text-white rounded-[30px] font-black text-xl hover:bg-emerald-600 transition-all shadow-lg">
+                        ВЕРНУЛ!
+                    </button>
+                    <button onclick="handleAction('forgot')" class="py-6 bg-slate-100 text-slate-400 rounded-[30px] font-black text-xl hover:bg-slate-200 transition-all">
+                        ЗАБЫЛ...
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex gap-4 mt-12">
+        <% for(let i=0; i < 5; i++) { %>
+            <div class="w-3 h-3 rounded-full <%= i < buriedCount ? 'bg-white shadow-[0_0_15px_#fff]' : 'bg-white/20' %> transition-all duration-700"></div>
+        <% } %>
+    </div>
+</div>
+
+<div id="victoryModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-red-950/95 backdrop-blur-xl">
+    <div class="bg-white w-full max-w-md rounded-[50px] p-12 text-center relative shadow-2xl">
+        <div class="w-32 h-32 bg-yellow-400 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl shadow-yellow-200">
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>
+        </div>
+        <h2 class="text-4xl font-black text-slate-900 mb-4 tracking-tighter uppercase">Чисто!</h2>
+        <p class="text-slate-500 font-bold mb-10 leading-tight uppercase text-[10px] tracking-widest">Кладбище пусто. Можно продолжать обучение.</p>
+        <a href="/revive" class="block w-full py-5 bg-emerald-500 text-white rounded-3xl font-black text-xl shadow-lg">ГОУ ДАЛЬШЕ</a>
+    </div>
+</div>
+
+<script>
+    const currentWordId = '<%= currentWord.id %>';
+    
+    function showTranslation() {
+        document.getElementById('translation').classList.remove('hidden');
+        document.getElementById('showBtn').classList.add('hidden');
+        document.getElementById('actionBtns').classList.replace('hidden', 'grid');
+    }
+
+    async function handleAction(action) {
+        try {
+            const response = await fetch('/live-action', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ wordId: currentWordId, action: action })
+            });
+            const data = await response.json();
+            
+            if (data.showVictory) {
+                document.getElementById('victoryModal').classList.remove('hidden');
+            } else {
+                window.location.reload();
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+</script>

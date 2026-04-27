@@ -1,0 +1,113 @@
+<div class="flex flex-col items-center justify-center min-h-[70vh] space-y-12">
+    
+    <% 
+        // Данные из контроллера
+        const theme = locals.theme || 'active-mode';
+        const buriedCount = locals.buriedCount || 0;
+    %>
+
+    <div id="main-training-card" class="glass-card w-full max-w-3xl rounded-[60px] p-16 border border-emerald-100/50 shadow-[0_40px_100px_rgba(0,0,0,0.03)] relative overflow-hidden transition-all duration-700 animate-in">
+        
+        <div class="absolute -right-12 -top-12 w-40 h-40 bg-emerald-50 rounded-full blur-3xl opacity-60"></div>
+
+        <div class="absolute top-10 left-1/2 -translate-x-1/2 z-20">
+            <span class="inline-flex items-center px-5 py-2 rounded-full bg-white shadow-sm border border-slate-100 text-[12px] font-black uppercase tracking-[0.2em] <%= theme === 'emergency' ? 'text-red-500' : 'text-emerald-600' %>">
+                <% if (theme === 'emergency') { %>
+                    ВОСКРЕШЕНИЕ: №<%= buriedCount %>
+                <% } else { %>
+                    ОШИБКА: <span id="js-error-counter"><%= buriedCount %></span>/5
+                <% } %>
+            </span>
+        </div>
+
+        <div class="relative z-10 text-center space-y-12">
+            <h1 class="text-8xl font-black text-slate-800 tracking-tighter uppercase leading-none mt-4">
+                <%= currentWord.word %>
+            </h1>
+
+            <div id="translation-area" class="hidden border-t border-slate-100 pt-8 animate-in">
+                <p class="text-slate-400 font-bold uppercase tracking-[0.2em] text-xs mb-2">Запомни перевод:</p>
+                <p class="text-4xl font-black text-emerald-600 uppercase">
+                    <%= currentWord.translation || currentWord.meaning %>
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6 w-full">
+                <% if (theme === 'emergency') { %>
+                    <button onclick="handleAction('remembered')" 
+                            class="py-8 bg-emerald-600 text-white rounded-[35px] font-black text-xl uppercase hover:bg-emerald-700 transition-all shadow-lg active:scale-95">
+                        Я ЗНАЮ
+                    </button>
+                    <button onclick="handleAction('forgot')" 
+                            class="py-8 bg-white border-2 border-red-100 text-red-500 rounded-[35px] font-black text-xl uppercase hover:bg-red-50 transition-all active:scale-95">
+                        СНОВА ЗАБЫЛ
+                    </button>
+                <% } else { %>
+                    <button onclick="handleAction('remembered')" 
+                            class="py-8 bg-emerald-600 text-white rounded-[35px] font-black text-xl uppercase hover:bg-emerald-700 transition-all shadow-lg active:scale-95">
+                        Я ВСПОМНИЛ
+                    </button>
+                    <button onclick="revealAndFail()" 
+                            class="py-8 bg-slate-100 text-slate-400 rounded-[35px] font-black text-xl uppercase hover:bg-slate-200 transition-all active:scale-95">
+                        Я ЗАБЫЛ
+                    </button>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Ждем загрузки DOM
+    document.addEventListener('DOMContentLoaded', () => {
+        const counterDisplay = document.getElementById('js-error-counter');
+        const dbValue = parseInt('<%= buriedCount %>');
+        
+        if (counterDisplay) {
+            // Синхронизируем текст с данными из БД при загрузке
+            counterDisplay.innerText = dbValue;
+        }
+    });
+
+    function revealAndFail() {
+        document.getElementById('translation-area').classList.remove('hidden');
+        setTimeout(() => handleAction('forgot'), 1500);
+    }
+
+    async function handleAction(action) {
+        const wordId = '<%= currentWord.id %>';
+        
+        // Визуальный отклик (мгновенно)
+        if (action === 'forgot') {
+            const counter = document.getElementById('js-error-counter');
+            if (counter) {
+                let current = parseInt(counter.innerText);
+                counter.innerText = current + 1;
+            }
+        }
+
+        try {
+            const response = await fetch('/live-action', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ wordId, action })
+            });
+
+            if (response.ok) {
+                // Маленькая задержка, чтобы БД успела продышаться, и хард-релоад
+                setTimeout(() => {
+                    window.location.href = '/revive?rnd=' + Math.random();
+                }, 50);
+            }
+        } catch (err) {
+            console.error('Ошибка:', err);
+            window.location.reload();
+        }
+    }
+</script>
+
+<style>
+    .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); }
+    .animate-in { animation: fadeIn 0.5s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>

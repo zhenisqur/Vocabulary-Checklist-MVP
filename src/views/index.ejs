@@ -1,0 +1,99 @@
+<div class="mb-10 relative">
+    <h1 class="text-5xl font-black text-slate-900 tracking-tight leading-tight">
+        Добро пожаловать в <br>
+        <span class="text-emerald-600 underline decoration-emerald-200 underline-offset-8">Vocabulary Checklist</span>
+    </h1>
+    
+    <p class="text-slate-500 mt-5 font-medium text-xl max-w-2xl leading-relaxed">
+        Твоя лингвистическая империя растет! Вот твоя статистика. 
+    </p>
+
+    <div class="mt-8 flex items-center gap-6 bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-white/50 inline-flex shadow-sm">
+        <div class="flex -space-x-3">
+            <div class="w-10 h-10 rounded-full bg-emerald-600 border-2 border-white flex items-center justify-center text-[11px] text-white font-black shadow-lg shadow-emerald-200"></div>
+            <div class="w-10 h-10 rounded-full bg-slate-800 border-2 border-white flex items-center justify-center text-[11px] text-white font-black"></div>
+            <div class="w-10 h-10 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-[11px] text-emerald-600 font-black"></div>
+        </div>
+        <p class="text-sm font-black text-slate-400 uppercase tracking-widest">Шаг 1: Добавляй новые слова из Библиотеки или вбивай их вручную через Словарь. Все они сразу попадают в раздел Живые.</p>
+        <p class="text-sm font-black text-slate-400 uppercase tracking-widest">Шаг 2: Начинай Тренировку немедленно! Это единственный способ заставить слова работать на тебя.</p>
+        <p class="text-sm font-black text-slate-400 uppercase tracking-widest">Шаг 3: Тренируйся усердно чтобы слова не попали в кладбище!</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+    
+    <div class="bg-gradient-to-br from-emerald-600 to-emerald-800 p-8 rounded-[48px] shadow-2xl shadow-emerald-200 text-white relative overflow-hidden group transition-transform hover:scale-[1.02]">
+        <div class="relative z-10">
+            <div class="flex justify-between items-start">
+                <p class="text-emerald-100 font-black uppercase text-[10px] tracking-[0.2em]">Всего в базе</p>
+                <div class="bg-emerald-500/30 p-2 rounded-xl backdrop-blur-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-100 w-6 h-6">
+                        <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                        <path d="M3 5V19A9 3 0 0 0 21 19V5"/>
+                        <path d="M3 12A9 3 0 0 0 21 12"/>
+                    </svg>
+                </div>
+            </div>
+            <h2 class="text-6xl font-black mt-4 tracking-tighter"><%= stats.total %></h2>
+        </div>
+        <div class="absolute -right-6 -bottom-6 text-9xl opacity-10 font-black italic select-none group-hover:scale-110 transition-transform">ALL</div>
+    </div>
+
+    <div class="bg-gradient-to-br from-rose-500 to-rose-700 p-8 rounded-[48px] shadow-2xl shadow-rose-200 text-white relative overflow-hidden group transition-transform hover:scale-[1.02]">
+        <div class="relative z-10">
+            <div class="flex justify-between items-start">
+                <p class="text-rose-100 font-black uppercase text-[10px] tracking-[0.2em]">На кладбище</p>
+                <div class="bg-rose-400/30 p-2 rounded-xl backdrop-blur-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-rose-100 w-6 h-6">
+                        <path d="M9 10h.01"/><path d="M15 10h.01"/><path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"/>
+                    </svg>
+                </div>
+            </div>
+            <h2 class="text-6xl font-black mt-4 tracking-tighter"><%= stats.buried %></h2>
+            <div class="mt-6 flex items-center gap-2 text-white font-black text-[11px] uppercase tracking-widest bg-white/20 px-3 py-1.5 rounded-full w-fit backdrop-blur-sm">
+                <div class="w-2 h-2 rounded-full bg-white animate-pulse"></div>
+                <span>Нужно воскресить!</span>
+            </div>
+        </div>
+        <div class="absolute -right-6 -bottom-6 text-9xl opacity-10 font-black italic select-none group-hover:scale-110 transition-transform">RIP</div>
+    </div>
+
+    <div class="bg-gradient-to-br from-amber-400 to-amber-600 p-8 rounded-[48px] shadow-2xl shadow-amber-200 text-white relative overflow-hidden group transition-transform hover:scale-[1.02]">
+        <div class="relative z-10">
+            <div class="flex justify-between items-start">
+                <p class="text-amber-50 font-black uppercase text-[10px] tracking-[0.2em]">Живые</p>
+                <div class="bg-amber-300/30 p-2 rounded-xl backdrop-blur-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-amber-50 w-6 h-6">
+                        <path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"/>
+                    </svg>
+                </div>
+            </div>
+            <h2 class="text-6xl font-black mt-4 tracking-tighter"><%= stats.active %></h2>
+            <div class="mt-6 flex items-center gap-2 text-white font-black text-[11px] uppercase tracking-widest bg-white/20 px-3 py-1.5 rounded-full w-fit backdrop-blur-sm">
+                <div class="w-2.5 h-2.5 rounded-full bg-yellow-300 shadow-lg shadow-yellow-100"></div>
+                <span>Ты в ударе!</span>
+            </div>
+        </div>
+        <div class="absolute -right-6 -bottom-6 text-9xl opacity-10 font-black italic select-none group-hover:scale-110 transition-transform">HOT</div>
+    </div>
+
+    <div class="bg-gradient-to-br from-blue-500 to-blue-700 p-8 rounded-[48px] shadow-2xl shadow-blue-200 text-white relative overflow-hidden group transition-transform hover:scale-[1.02]">
+        <div class="relative z-10">
+            <div class="flex justify-between items-start">
+                <p class="text-blue-50 font-black uppercase text-[10px] tracking-[0.2em]">Оживленные</p>
+                <div class="bg-blue-400/30 p-2 rounded-xl backdrop-blur-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-blue-50 w-6 h-6">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                    </svg>
+                </div>
+            </div>
+            <h2 class="text-6xl font-black mt-4 tracking-tighter"><%= stats.revived %></h2>
+            <div class="mt-6 flex items-center gap-2 text-white font-black text-[11px] uppercase tracking-widest bg-white/20 px-3 py-1.5 rounded-full w-fit backdrop-blur-sm">
+                <div class="w-2.5 h-2.5 rounded-full bg-blue-300 shadow-lg shadow-blue-100"></div>
+                <span>Спасены!</span>
+            </div>
+        </div>
+        <div class="absolute -right-6 -bottom-6 text-9xl opacity-10 font-black italic select-none group-hover:scale-110 transition-transform">MVP</div>
+    </div>
+
+</div>
